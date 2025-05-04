@@ -1,0 +1,141 @@
+Cómo diseñar una base de datos (desde cero)
+https://www.youtube.com/watch?v=JKMEDTfUZ58&list=PLg9145ptuAig5eqBYvOuMdpTP2ORUNXbf
+
+1. Analiza el problema y define los requisitos
+
+Antes de escribir código o diseñar tablas, debes entender qué datos necesitas y qué operaciones vas a realizar.
+
+Ejemplo: quieres guardar información sobre alumnos en un instituto.
+
+Preguntas clave:
+
+    ¿Qué datos se necesitan? → Alumnos, profesores, asignaturas, matrículas.
+
+    ¿Qué relaciones hay entre ellos? → Un alumno puede matricularse en varias asignaturas.
+
+    ¿Qué operaciones se harán? → Insertar alumnos, consultar sus notas, etc.
+
+2. Identifica las entidades y sus atributos
+
+Una entidad es algo que quieres almacenar (como una tabla). Un atributo es un dato sobre esa entidad (una columna).
+Ejemplo:
+
+    Alumno
+
+        id
+        nombre
+        fecha_nacimiento
+
+    Asignatura
+
+        id
+        nombre
+        curso
+
+    Profesor
+
+        id
+        nombre
+        especialidad
+
+3. Define las relaciones entre entidades
+
+Hay 3 tipos clásicos de relaciones:
+Tipo de relación	Ejemplo
+Uno a uno (1:1)	Cada profesor tiene un despacho único
+Uno a muchos (1:N)	Un profesor imparte varias asignaturas
+Muchos a muchos (N:M)	Un alumno se matricula en muchas asignaturas
+Relación N:M → Tabla intermedia
+
+Para representar una relación muchos-a-muchos se crea una tabla adicional:
+
+Matrícula
+
+    id_alumno
+    id_asignatura
+
+4. Normaliza el diseño
+
+La normalización evita datos duplicados e inconsistentes. Las formas normales más comunes son:
+
+    1FN (Primera Forma Normal): No tener columnas repetidas ni listas dentro de una columna.
+    2FN: Todos los campos dependen totalmente de la clave primaria.
+    3FN: No tener dependencias transitivas (columnas que dependen de otras columnas no clave).
+
+Ejemplo mal diseñado:
+alumno	asignatura1	asignatura2	asignatura3
+
+→ Esto rompe la 1FN. Es mejor usar una tabla de relaciones.
+5. Define claves primarias y foráneas
+
+    La clave primaria (PRIMARY KEY) identifica de forma única cada fila.
+    Una clave foránea (FOREIGN KEY) conecta dos tablas.
+
+Ejemplo:
+
+CREATE TABLE alumnos (
+  id INTEGER PRIMARY KEY,
+  nombre TEXT
+);
+
+CREATE TABLE asignaturas (
+  id INTEGER PRIMARY KEY,
+  nombre TEXT
+);
+
+CREATE TABLE matriculas (
+  id_alumno INTEGER,
+  id_asignatura INTEGER,
+  FOREIGN KEY(id_alumno) REFERENCES alumnos(id),
+  FOREIGN KEY(id_asignatura) REFERENCES asignaturas(id)
+);
+
+6. Diseña restricciones y reglas
+
+Para asegurar integridad:
+
+    NOT NULL: el campo no puede quedar vacío.
+    UNIQUE: no puede haber duplicados.
+    CHECK: condiciones (por ejemplo: edad > 0).
+    DEFAULT: valor por defecto.
+
+7. Crea un diagrama entidad-relación (opcional pero muy útil)
+
+Un diagrama E/R muestra gráficamente:
+
+    Entidades (cajas)
+    Atributos (dentro de las cajas)
+    Relaciones (líneas)
+
+Puedes usar herramientas como:
+
+    dbdiagram.io
+    draw.io
+    MySQL Workbench (aunque uses SQLite)
+
+8. Implementa el diseño en código SQL
+
+Usa sentencias como CREATE TABLE, INSERT INTO, SELECT, etc. SQLite es ideal para practicar.
+9. Prueba tu diseño
+
+    Inserta datos de prueba.
+    Consulta con SELECT para ver si la estructura soporta lo que necesitas.
+    Asegúrate de que las relaciones y restricciones funcionen correctamente.
+
+10. Itera y mejora
+
+Siempre puedes mejorar el diseño a medida que entiendes mejor el problema o cambian los requisitos.
+Ejemplo completo de diseño: sistema escolar (resumen)
+
+Tablas:
+
+    alumnos (id, nombre)
+    profesores (id, nombre)
+    asignaturas (id, nombre, id_profesor)
+    matriculas (id_alumno, id_asignatura)
+
+Relaciones:
+
+    Un profesor tiene muchas asignaturas (1:N).
+
+    Un alumno tiene muchas asignaturas, y viceversa (N:M) → tabla matriculas.
